@@ -4,8 +4,6 @@ Unofficial Kotlin Wrapper of the LeaderOS API https://developer.leaderos.net/
 
 ## Table of Contents
 
-## Table of Contents
-
 - [Getting Started](#getting-started)
 - [How to use](#how-to-use)
 - [Status](#status)
