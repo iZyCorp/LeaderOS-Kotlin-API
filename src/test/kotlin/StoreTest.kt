@@ -1,9 +1,11 @@
 import fr.izy.leaderos.LeaderOS
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.test.runTest
+import fr.izy.leaderos.models.BuyItem
 import fr.izy.leaderos.models.Category
 import fr.izy.leaderos.models.Donation
-import fr.izy.leaderos.models.OrderStatus
+import fr.izy.leaderos.models.DonationType
+import fr.izy.leaderos.models.Purchase
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -14,7 +16,7 @@ class StoreTest {
 
     @Test
     fun listing() = runTest {
-        val categories: List<Category>? = leaderOS.store.listing()
+        val categories: List<Category> = leaderOS.store.listing()
 
         assertNotNull(categories)
     }
@@ -23,7 +25,6 @@ class StoreTest {
     fun products() = runTest {
         val products = leaderOS.store.products()
 
-        assertNotNull(products)
         assertTrue(products.isNotEmpty())
     }
 
@@ -37,8 +38,8 @@ class StoreTest {
 
     @Test
     fun categories() = runTest {
-        val categories: List<Category>? = leaderOS.store.categories()
-        val category: Category? = leaderOS.store.category(1)
+        val categories: List<Category> = leaderOS.store.categories()
+        val category: Category = leaderOS.store.category(1)
 
         assertNotNull(categories)
         assertNotNull(category)
@@ -46,14 +47,14 @@ class StoreTest {
 
     @Test
     fun buy() = runTest {
-        val orderStatus: OrderStatus? = leaderOS.store.buy(arrayOf(1, 2, 3, 4, 5), 1)
+        val purchase: Purchase = leaderOS.store.buy(1, (1..5).map { BuyItem(it) })
 
-        assertNotNull(orderStatus)
+        assertNotNull(purchase)
     }
 
     @Test
     fun donations() = runTest {
-        val donations: List<Donation>? = leaderOS.store.donations("latest", 10)
+        val donations: List<Donation> = leaderOS.store.donations(DonationType.LATEST, 10)
 
         assertNotNull(donations)
     }

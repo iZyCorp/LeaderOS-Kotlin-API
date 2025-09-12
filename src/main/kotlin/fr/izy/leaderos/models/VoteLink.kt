@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VoteLink(
-    val id: String,
+    val id: Int,
     val name: String,
     val link: String
 )
