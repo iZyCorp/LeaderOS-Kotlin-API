@@ -1,7 +1,7 @@
-package services
+package fr.izy.leaderos.services
 
-import internal.Service
-import internal.ServiceConfiguration
+import fr.izy.leaderos.internal.Service
+import fr.izy.leaderos.internal.ServiceConfiguration
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 

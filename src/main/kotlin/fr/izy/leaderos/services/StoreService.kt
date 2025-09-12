@@ -1,11 +1,11 @@
-package services
+package fr.izy.leaderos.services
 
-import internal.Service
-import internal.ServiceConfiguration
-import models.Category
-import models.Donation
-import models.OrderStatus
-import models.StoreProduct
+import fr.izy.leaderos.internal.Service
+import fr.izy.leaderos.internal.ServiceConfiguration
+import fr.izy.leaderos.models.Category
+import fr.izy.leaderos.models.Donation
+import fr.izy.leaderos.models.OrderStatus
+import fr.izy.leaderos.models.StoreProduct
 
 class StoreService internal constructor(config: ServiceConfiguration) : Service(config) {
 

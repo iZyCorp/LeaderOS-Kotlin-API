@@ -1,11 +1,11 @@
-package services
+package fr.izy.leaderos.services
 
-import internal.Service
-import internal.ServiceConfiguration
-import models.Order
-import models.Role
-import models.Ticket
-import models.User
+import fr.izy.leaderos.internal.Service
+import fr.izy.leaderos.internal.ServiceConfiguration
+import fr.izy.leaderos.models.Order
+import fr.izy.leaderos.models.Role
+import fr.izy.leaderos.models.Ticket
+import fr.izy.leaderos.models.User
 
 class UserService internal constructor(config: ServiceConfiguration) : Service(config) {
 

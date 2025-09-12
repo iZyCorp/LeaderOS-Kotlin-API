@@ -1,3 +1,4 @@
+import fr.izy.leaderos.LeaderOS
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

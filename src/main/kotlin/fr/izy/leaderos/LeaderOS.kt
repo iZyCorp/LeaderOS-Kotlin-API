@@ -1,11 +1,13 @@
-import internal.ServiceConfiguration
+package fr.izy.leaderos
+
+import fr.izy.leaderos.internal.ServiceConfiguration
+import fr.izy.leaderos.services.AuthService
+import fr.izy.leaderos.services.CreditService
+import fr.izy.leaderos.services.DiscordService
+import fr.izy.leaderos.services.StoreService
+import fr.izy.leaderos.services.UserService
+import fr.izy.leaderos.services.VoteService
 import okhttp3.OkHttpClient
-import services.AuthService
-import services.CreditService
-import services.DiscordService
-import services.StoreService
-import services.UserService
-import services.VoteService
 
 
 class LeaderOS(
@@ -32,7 +34,7 @@ class LeaderOS(
     val auth: AuthService = AuthService(config)
 
     /**
-     * Internal object used to hold needed data
+     * Internal object used to hold necessary data
      */
     private class ApiConfiguration(
         override val baseUrl: String,

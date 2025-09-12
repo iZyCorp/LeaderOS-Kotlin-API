@@ -1,17 +1,25 @@
-package services
+package fr.izy.leaderos.services
 
-import internal.Service
-import internal.ServiceConfiguration
+import fr.izy.leaderos.internal.Service
+import fr.izy.leaderos.internal.ServiceConfiguration
 import kotlinx.serialization.json.JsonObject
 
 class CreditService internal constructor(config: ServiceConfiguration) : Service(config) {
 
-    suspend fun show(username: String) : JsonObject? {
+    suspend fun oldShow(username: String) : JsonObject? {
         return super.get("credits/$username")
     }
 
-    suspend fun show(id: Int) : JsonObject? {
+    suspend fun oldShow(id: Int) : JsonObject? {
         return super.get("credits/$id")
+    }
+
+    suspend fun show(username: String) : JsonObject? {
+        return super.get("credits?username=$username")
+    }
+
+    suspend fun show(id: Int) : JsonObject? {
+        return super.get("credits?id=$id")
     }
 
     suspend fun add(targetUsername: String, amount: Double): JsonObject? {
@@ -71,11 +79,19 @@ class CreditService internal constructor(config: ServiceConfiguration) : Service
         return super.post("credits/$senderUsername/send", body)
     }
 
-    suspend fun set(targetUsername: String, amount: Double) : JsonObject? {
+    suspend fun oldSet(targetUsername: String, amount: Double) : JsonObject? {
         val body = mapOf(
             "amount" to amount.toString()
         )
         return super.post("credits/$targetUsername/set", body)
+    }
+
+    suspend fun set(targetUsername: String, amount: Double) : JsonObject? {
+        val body = mapOf(
+            "target_username" to targetUsername.toString(),
+            "amount" to amount.toString()
+        )
+        return super.post("credits/set", body)
     }
 
 

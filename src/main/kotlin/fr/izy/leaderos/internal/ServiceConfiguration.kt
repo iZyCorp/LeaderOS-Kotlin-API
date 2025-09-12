@@ -1,4 +1,4 @@
-package internal
+package fr.izy.leaderos.internal
 
 import okhttp3.OkHttpClient
 

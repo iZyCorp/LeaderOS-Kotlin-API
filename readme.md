@@ -64,7 +64,7 @@ This Wrapper has been tested only on `leaderOS 5.5.9`
 |-------------|---------------|--------|
 | `/profiles` | User profiles | 📗     |
 | `/roles`    | User roles    | 📗     |
-| `/tickets`  | User tickets  | D      |
+| `/tickets`  | User tickets  | 📗     |
 | `/orders`   | User orders   | 📗     |
 
 ### Store Endpoints
