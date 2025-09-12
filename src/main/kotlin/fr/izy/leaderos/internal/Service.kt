@@ -1,4 +1,4 @@
-package internal
+package fr.izy.leaderos.internal
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +9,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 /**
- * Internal class used to make HTTP requests. Must be used only for services class.
+ * Internal class used to make HTTP requests. Must be used only for service class.
  */
 abstract class Service internal constructor(val config: ServiceConfiguration) {
 

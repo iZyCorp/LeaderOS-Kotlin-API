@@ -1,4 +1,4 @@
-package models
+package fr.izy.leaderos.models
 
 import kotlinx.serialization.Serializable
 
