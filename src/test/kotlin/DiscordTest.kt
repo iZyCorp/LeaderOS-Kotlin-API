@@ -1,6 +1,7 @@
+import fr.izy.leaderos.LeaderOS
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.test.runTest
-import models.User
+import fr.izy.leaderos.models.User
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 

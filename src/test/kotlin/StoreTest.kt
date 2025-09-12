@@ -1,8 +1,9 @@
+import fr.izy.leaderos.LeaderOS
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.test.runTest
-import models.Category
-import models.Donation
-import models.OrderStatus
+import fr.izy.leaderos.models.Category
+import fr.izy.leaderos.models.Donation
+import fr.izy.leaderos.models.OrderStatus
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

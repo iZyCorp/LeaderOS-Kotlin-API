@@ -1,3 +1,4 @@
+import fr.izy.leaderos.LeaderOS
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -26,7 +27,7 @@ class CreditTest {
 
     @Test
     fun remove() = runTest {
-        val result = leaderOS.credits.oldRemove("iZyy_", 10.0)
+        val result = leaderOS.credits.remove("iZyy_", 10.0)
 
         assertNotNull(result)
         assertEquals("true", result["status"].toString())
