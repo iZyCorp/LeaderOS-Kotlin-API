@@ -1,98 +1,88 @@
 package fr.izy.leaderos.services
 
+import fr.izy.leaderos.internal.CreditsDto
 import fr.izy.leaderos.internal.Service
 import fr.izy.leaderos.internal.ServiceConfiguration
-import kotlinx.serialization.json.JsonObject
+import fr.izy.leaderos.models.CreditBalance
+import fr.izy.leaderos.models.CreditTransfer
+import java.math.BigDecimal
 
 class CreditService internal constructor(config: ServiceConfiguration) : Service(config) {
 
-    suspend fun oldShow(username: String) : JsonObject? {
-        return super.get("credits/$username")
+    suspend fun show(username: String): CreditBalance {
+        val response: CreditsDto =
+            if (isLegacy) get("credits/$username") else get("credits", mapOf("username" to username))
+        return response.balance()
     }
 
-    suspend fun oldShow(id: Int) : JsonObject? {
-        return super.get("credits/$id")
-    }
-
-    suspend fun show(username: String) : JsonObject? {
-        return super.get("credits?username=$username")
-    }
-
-    suspend fun show(id: Int) : JsonObject? {
-        return super.get("credits?id=$id")
-    }
-
-    suspend fun add(targetUsername: String, amount: Double): JsonObject? {
-        val body = mapOf(
-            "target_username" to targetUsername,
-            "amount" to amount.toString()
-        )
-        return super.post("credits/add", body)
+    suspend fun show(id: Int): CreditBalance {
+        val response: CreditsDto =
+            if (isLegacy) get("credits/$id") else get("credits", mapOf("id" to id))
+        return response.balance()
     }
 
     /**
-     * If you are using leaderOS 5.5.9 use this
+     * @return the target's balance after the operation.
      */
-    suspend fun oldAdd(targetUsername: String, amount: Double): JsonObject? {
-        val body = mapOf(
-            "amount" to amount.toString()
-        )
-        return super.post("credits/$targetUsername/add", body)
-    }
-
-    suspend fun remove(targetUsername: String, amount: Double): JsonObject? {
-        val body = mapOf(
-            "target_username" to targetUsername,
-            "amount" to amount.toString()
-        )
-        return super.post("credits/remove", body)
-    }
+    suspend fun add(targetUsername: String, amount: Number): CreditBalance =
+        update("add", targetUsername, amount)
 
     /**
-     * If you are using leaderOS 5.5.9 use this
+     * @return the target's balance after the operation.
      */
-    suspend fun oldRemove(targetUsername: String, amount: Double): JsonObject? {
-        val body = mapOf(
-            "amount" to amount.toString()
-        )
-        return super.post("credits/$targetUsername/remove", body)
-    }
-
-
-    suspend fun send(senderUsername: String, targetUsername: String, amount: Double) : JsonObject? {
-        val body = mapOf(
-            "sender_username" to senderUsername,
-            "target_username" to targetUsername,
-            "amount" to amount.toString()
-        )
-        return super.post("credits/send", body)
-    }
+    suspend fun remove(targetUsername: String, amount: Number): CreditBalance =
+        update("remove", targetUsername, amount)
 
     /**
-     * If you are using leaderOS 5.5.9 use this
+     * @return the target's balance after the operation.
      */
-    suspend fun oldSend(senderUsername: String, targetUsername: String, amount: Double) : JsonObject? {
-        val body = mapOf(
-            "target_username" to targetUsername,
-            "amount" to amount.toString()
-        )
-        return super.post("credits/$senderUsername/send", body)
+    suspend fun set(targetUsername: String, amount: Number): CreditBalance =
+        update("set", targetUsername, amount)
+
+    suspend fun send(senderUsername: String, targetUsername: String, amount: Number): CreditTransfer {
+        val response: CreditsDto = if (isLegacy) {
+            // Older wrapper versions sent `target_username`, the official 5.x plugin sent `target`
+            post("credits/$senderUsername/send", mapOf("target" to targetUsername, "target_username" to targetUsername, "amount" to amount))
+        } else {
+            post("credits/send", mapOf("sender_username" to senderUsername, "target_username" to targetUsername, "amount" to amount))
+        }
+
+        val sender = response.currentRawCredits?.let { CreditBalance(it, response.currentCredits.orEmpty(), response.currency.orEmpty()) }
+            ?: show(senderUsername)
+        val target = response.targetCurrentRawCredits?.let { CreditBalance(it, response.targetCurrentCredits.orEmpty(), response.currency.orEmpty()) }
+            ?: show(targetUsername)
+        return CreditTransfer(sender, target)
     }
 
-    suspend fun oldSet(targetUsername: String, amount: Double) : JsonObject? {
-        val body = mapOf(
-            "amount" to amount.toString()
-        )
-        return super.post("credits/$targetUsername/set", body)
+    private suspend fun update(operation: String, targetUsername: String, amount: Number): CreditBalance {
+        val response: CreditsDto = if (isLegacy) {
+            post("credits/$targetUsername/$operation", mapOf("amount" to amount))
+        } else {
+            post("credits/$operation", mapOf("target_username" to targetUsername, "amount" to amount))
+        }
+
+        // LeaderOS 5.x does not always return the new balance
+        return response.currentRawCredits?.let { CreditBalance(it, response.currentCredits.orEmpty(), response.currency.orEmpty()) }
+            ?: show(targetUsername)
     }
 
-    suspend fun set(targetUsername: String, amount: Double) : JsonObject? {
-        val body = mapOf(
-            "target_username" to targetUsername.toString(),
-            "amount" to amount.toString()
-        )
-        return super.post("credits/set", body)
-    }
+    private fun CreditsDto.balance() = CreditBalance(rawCredits ?: BigDecimal.ZERO, credits.orEmpty(), currency.orEmpty())
 
+    @Deprecated("Configure the version once: LeaderOS(url, key, version = LeaderOSVersion.V5_5_9)", ReplaceWith("show(username)"), DeprecationLevel.ERROR)
+    suspend fun oldShow(username: String): CreditBalance = show(username)
 
+    @Deprecated("Configure the version once: LeaderOS(url, key, version = LeaderOSVersion.V5_5_9)", ReplaceWith("show(id)"), DeprecationLevel.ERROR)
+    suspend fun oldShow(id: Int): CreditBalance = show(id)
+
+    @Deprecated("Configure the version once: LeaderOS(url, key, version = LeaderOSVersion.V5_5_9)", ReplaceWith("add(targetUsername, amount)"), DeprecationLevel.ERROR)
+    suspend fun oldAdd(targetUsername: String, amount: Double): CreditBalance = add(targetUsername, amount)
+
+    @Deprecated("Configure the version once: LeaderOS(url, key, version = LeaderOSVersion.V5_5_9)", ReplaceWith("remove(targetUsername, amount)"), DeprecationLevel.ERROR)
+    suspend fun oldRemove(targetUsername: String, amount: Double): CreditBalance = remove(targetUsername, amount)
+
+    @Deprecated("Configure the version once: LeaderOS(url, key, version = LeaderOSVersion.V5_5_9)", ReplaceWith("send(senderUsername, targetUsername, amount)"), DeprecationLevel.ERROR)
+    suspend fun oldSend(senderUsername: String, targetUsername: String, amount: Double): CreditTransfer = send(senderUsername, targetUsername, amount)
+
+    @Deprecated("Configure the version once: LeaderOS(url, key, version = LeaderOSVersion.V5_5_9)", ReplaceWith("set(targetUsername, amount)"), DeprecationLevel.ERROR)
+    suspend fun oldSet(targetUsername: String, amount: Double): CreditBalance = set(targetUsername, amount)
 }

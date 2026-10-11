@@ -9,7 +9,7 @@ class VoteService internal constructor(config: ServiceConfiguration) : Service(c
     /**
      * Fetch vote uri defined in leaderOS. If a player is specified it will add an extra parameter to autocomplete username
      */
-    suspend fun links(username: String? = null): List<VoteLink>? {
-        return super.get("vote-links${username?.let { "?username=$it" } ?: ""}")
+    suspend fun links(username: String? = null): List<VoteLink> {
+        return get("vote-links", mapOf("username" to username))
     }
 }

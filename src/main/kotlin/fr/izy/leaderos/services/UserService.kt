@@ -6,38 +6,70 @@ import fr.izy.leaderos.models.Order
 import fr.izy.leaderos.models.Role
 import fr.izy.leaderos.models.Ticket
 import fr.izy.leaderos.models.User
+import java.time.LocalDateTime
 
 class UserService internal constructor(config: ServiceConfiguration) : Service(config) {
 
-    suspend fun profile(id: Int): User? {
-        return super.get("users/$id")
+    suspend fun profile(id: Int): User =
+        if (isLegacy) get("users/$id") else get("users", mapOf("userID" to id))
+
+    suspend fun profile(username: String): User =
+        if (isLegacy) get("users/$username") else get("users", mapOf("username" to username))
+
+    suspend fun roles(id: Int): List<Role> {
+        return get("users/$id/roles")
     }
 
-    suspend fun profile(username: String): User? {
-        return super.get("users/$username")
+    suspend fun roles(username: String): List<Role> {
+        return get("users/$username/roles")
     }
 
-    suspend fun roles(id: Int): List<Role>? {
-        return super.get("users/$id/roles")
+    /**
+     * Gives a role to a user and returns the user's roles.
+     *
+     * @param expiryDate `null` for a permanent role.
+     */
+    suspend fun addRole(userId: Int, roleId: Int, expiryDate: LocalDateTime? = null): List<Role> {
+        val body = mapOf(
+            "roleID" to roleId,
+            "expiryDate" to expiryDate
+        )
+        return post("users/$userId/roles", body)
     }
 
-    suspend fun roles(username: String): List<Role>? {
-        return super.get("users/$username/roles")
+    /**
+     * Updates a role owned by a user and returns the user's roles.
+     *
+     * @param expiryDate `null` to leave the expiry date unchanged.
+     */
+    suspend fun updateRole(userId: Int, roleId: Int, expiryDate: LocalDateTime? = null): List<Role> {
+        val body = mapOf(
+            "roleID" to roleId,
+            "expiryDate" to expiryDate
+        )
+        return patch("users/$userId/roles/$roleId", body)
     }
 
-    suspend fun tickets(id: Int): List<Ticket>? {
-        return super.get("users/$id/tickets")
+    /**
+     * Removes a role from a user and returns the user's remaining roles.
+     */
+    suspend fun removeRole(userId: Int, roleId: Int): List<Role> {
+        return delete("users/$userId/roles/$roleId")
     }
 
-    suspend fun tickets(username: String): List<Ticket>? {
-        return super.get("users/$username/tickets")
+    suspend fun tickets(id: Int): List<Ticket> {
+        return get("users/$id/tickets")
     }
 
-    suspend fun orders(id: Int): List<Order>? {
-        return super.get("users/$id/orders")
+    suspend fun tickets(username: String): List<Ticket> {
+        return get("users/$username/tickets")
     }
 
-    suspend fun orders(username: String): List<Order>? {
-        return super.get("users/$username/orders")
+    suspend fun orders(id: Int): List<Order> {
+        return get("users/$id/orders")
+    }
+
+    suspend fun orders(username: String): List<Order> {
+        return get("users/$username/orders")
     }
 }
